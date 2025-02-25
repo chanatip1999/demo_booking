@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}หน้าแรก - ระบบจองห้องประชุมและยานพาหนะ{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="text-4xl font-bold text-gray-900 mb-8">
+        ระบบจองห้องประชุมและยานพาหนะ
+    </h1>
+    
+    {% if current_user.is_authenticated %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <!-- Room Booking Card -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="p-6">
+                <div class="text-3xl mb-4">🏢</div>
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">จองห้องประชุม</h2>
+                <p class="text-gray-600 mb-6">
+                    จองห้องประชุมสำหรับการประชุม สัมมนา หรือกิจกรรมต่างๆ
+                </p>
+                <a href="{{ url_for('rooms.list_rooms') }}"
+                    class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                    จองห้องประชุม
+                </a>
+            </div>
+        </div>
+        
+        <!-- Vehicle Booking Card -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="p-6">
+                <div class="text-3xl mb-4">🚗</div>
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">จองยานพาหนะ</h2>
+                <p class="text-gray-600 mb-6">
+                    จองรถยนต์ รถตู้ หรือยานพาหนะอื่นๆ สำหรับการเดินทาง
+                </p>
+                <a href="{{ url_for('vehicles.list_vehicles') }}"
+                    class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                    จองยานพาหนะ
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- My Recent Bookings -->
+    <div class="mt-16">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-8">การจองล่าสุดของฉัน</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <!-- Room Bookings -->
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">ห้องประชุม</h3>
+                {% if room_bookings %}
+                <div class="space-y-4">
+                    {% for booking in room_bookings %}
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="font-medium text-gray-900">{{ booking.room.name }}</div>
+                        <div class="text-sm text-gray-600">{{ booking.title }}</div>
+                        <div class="text-sm text-gray-500">
+                            {{ booking.start_time.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if booking.status == 'pending' %}
+                                    bg-yellow-100 text-yellow-800
+                                {% elif booking.status == 'approved' %}
+                                    bg-green-100 text-green-800
+                                {% else %}
+                                    bg-red-100 text-red-800
+                                {% endif %}">
+                                {{ booking.status }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-600">ไม่มีการจองห้องประชุม</p>
+                {% endif %}
+            </div>
+            
+            <!-- Vehicle Bookings -->
+            <div>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">ยานพาหนะ</h3>
+                {% if vehicle_bookings %}
+                <div class="space-y-4">
+                    {% for booking in vehicle_bookings %}
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="font-medium text-gray-900">{{ booking.vehicle.name }}</div>
+                        <div class="text-sm text-gray-600">{{ booking.title }}</div>
+                        <div class="text-sm text-gray-500">
+                            {{ booking.start_time.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                        <div class="mt-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if booking.status == 'pending' %}
+                                    bg-yellow-100 text-yellow-800
+                                {% elif booking.status == 'approved' %}
+                                    bg-green-100 text-green-800
+                                {% else %}
+                                    bg-red-100 text-red-800
+                                {% endif %}">
+                                {{ booking.status }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-600">ไม่มีการจองยานพาหนะ</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="max-w-2xl mx-auto">
+        <p class="text-xl text-gray-600 mb-8">
+            ระบบจองห้องประชุมและยานพาหนะ พร้อมระบบแจ้งเตือนผ่าน LINE
+        </p>
+        <div class="space-x-4">
+            <a href="{{ url_for('auth.login') }}"
+                class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                เข้าสู่ระบบ
+            </a>
+            <a href="{{ url_for('auth.register') }}"
+                class="inline-block bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700">
+                ลงทะเบียน
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

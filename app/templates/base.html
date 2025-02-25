@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ระบบจองห้องประชุมและยานพาหนะ{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('main.index') }}" class="font-semibold text-xl">
+                        🏢 ระบบจองห้องประชุม
+                    </a>
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('rooms.list_rooms') }}" class="hover:text-blue-200">
+                        ห้องประชุม
+                    </a>
+                    <a href="{{ url_for('vehicles.list_vehicles') }}" class="hover:text-blue-200">
+                        ยานพาหนะ
+                    </a>
+                    
+                    {% if current_user.is_approver() or current_user.is_admin() %}
+                    <a href="{{ url_for('rooms.approve_list') }}" class="hover:text-blue-200">
+                        อนุมัติการจอง
+                    </a>
+                    {% endif %}
+                    
+                    {% if current_user.is_admin() %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="hover:text-blue-200">
+                        จัดการระบบ
+                    </a>
+                    {% endif %}
+                    
+                    <div class="relative">
+                        <button class="flex items-center space-x-1 hover:text-blue-200">
+                            <span>{{ current_user.username }}</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden">
+                            <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                ออกจากระบบ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('auth.login') }}" class="hover:text-blue-200">เข้าสู่ระบบ</a>
+                    <a href="{{ url_for('auth.register') }}" class="hover:text-blue-200">ลงทะเบียน</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                {% for category, message in messages %}
+                    <div class="rounded-md p-4 mb-4 
+                        {% if category == 'success' %}
+                            bg-green-50 text-green-700
+                        {% elif category == 'danger' %}
+                            bg-red-50 text-red-700
+                        {% else %}
+                            bg-blue-50 text-blue-700
+                        {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p>&copy; 2025 ระบบจองห้องประชุมและยานพาหนะ</p>
+            </div>
+        </div>
+    </footer>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
